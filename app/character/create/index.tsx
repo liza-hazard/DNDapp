@@ -35,14 +35,36 @@ export default function QuizScreen() {
   const currentValue = answers[currentQuestion.characterField];
   console.log(answers);
   function nextQuest() {
-    let vis = false;
-    let next = currentQuestionIndex;
-    console.log(next);
-    while (vis) {}
-    setCurrentQuestionIndex((prev) => prev + 1);
+    let next: number = findNextVisibleQuestion();
+    if (next >= quiz.length) {
+      createChar();
+      return;
+    }
+    setCurrentQuestionIndex(next);
+  }
+  function findNextVisibleQuestion() {
+    let next: number = currentQuestionIndex + 1;
+    while (next <= quiz.length - 1) {
+      if (quiz[next].visible(answers)) {
+        break;
+      }
+      next++;
+    }
+    return next;
+  }
+  function findPreviousVisibleQuestion() {
+    let prev: number = currentQuestionIndex - 1;
+    while (prev >= 0) {
+      if (quiz[prev].visible(answers)) {
+        break;
+      }
+      prev--;
+    }
+    return prev;
   }
   function prevQuest() {
-    setCurrentQuestionIndex((prev) => prev - 1);
+    let prev: number = findPreviousVisibleQuestion();
+    setCurrentQuestionIndex(prev);
   }
   function createChar() {
     console.log(answers);
@@ -54,7 +76,6 @@ export default function QuizScreen() {
       quest.dependence.forEach((i) => {
         newAnswers[i] = "";
       });
-      console.log(newAnswers);
       setAnswers(newAnswers);
     } else {
       setAnswers({
