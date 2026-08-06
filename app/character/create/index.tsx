@@ -1,14 +1,10 @@
+import InputQuestion from "@/components/questions/InputQuestion";
+import MultiSelectQuestion from "@/components/questions/MultiSelectQuestion";
+import SelectQuestion from "@/components/questions/SelectQuestion";
 import { ThemedText } from "@/components/themed-text";
 import quiz from "@/constants/quiz";
 import { useState } from "react";
-import {
-  Button,
-  FlatList,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Button, View } from "react-native";
 
 interface CharacterAnswers {
   race: string;
@@ -17,7 +13,7 @@ interface CharacterAnswers {
   background: string;
   alignment: string;
   name: string;
-  spels: string;
+  spels: string[];
 }
 
 export default function QuizScreen() {
@@ -28,7 +24,7 @@ export default function QuizScreen() {
     background: "",
     alignment: "",
     name: "",
-    spels: "",
+    spels: [],
   });
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const currentQuestion = quiz[currentQuestionIndex];
@@ -69,11 +65,11 @@ export default function QuizScreen() {
   function createChar() {
     console.log(answers);
   }
-  function updateAnswer(quest, field, value) {
+  function updateAnswer(quest, field: string, value) {
     if (quest.dependence) {
       const newAnswers = { ...answers };
       newAnswers[field] = value;
-      quest.dependence.forEach((i) => {
+      quest.dependence.forEach((i: string) => {
         newAnswers[i] = "";
       });
       setAnswers(newAnswers);
@@ -84,57 +80,41 @@ export default function QuizScreen() {
       });
     }
   }
-  let currentAnswer =
-    currentQuestion.type == "select"
-      ? currentQuestion.options.find((i) => i.id == currentValue)
-      : null;
+  function renderQuestion() {
+    switch (currentQuestion.type) {
+      case "select":
+        return (
+          <SelectQuestion
+            quest={currentQuestion}
+            answers={answers}
+            updateAnswer={updateAnswer}
+          />
+        );
+      case "input":
+        return (
+          <InputQuestion
+            quest={currentQuestion}
+            answers={answers}
+            updateAnswer={updateAnswer}
+          />
+        );
+      case "multiselect":
+        return (
+          <MultiSelectQuestion
+            quest={currentQuestion}
+            answers={answers}
+            updateAnswer={updateAnswer}
+          />
+        );
+      default:
+        return <ThemedText>Неизвестный типо вопроса</ThemedText>;
+    }
+  }
   return (
     <View>
       <ThemedText type="title">Quiz</ThemedText>
       <ThemedText>{currentQuestion.title}</ThemedText>
-      {currentQuestion.type == "select" ? (
-        <View>
-          <FlatList
-            data={
-              currentQuestion.filterElements
-                ? currentQuestion.filterElements(answers)
-                : currentQuestion.options
-            }
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => {
-                  updateAnswer(
-                    currentQuestion,
-                    currentQuestion.characterField,
-                    item.id,
-                  );
-                }}
-                style={{
-                  backgroundColor:
-                    currentValue == item.id ? "darkgreen" : "#ccc",
-                }}
-              >
-                <Text>{item.name}</Text>
-              </TouchableOpacity>
-            )}
-          />
-          <ThemedText>
-            {currentQuestion.resultText}:{" "}
-            {currentAnswer ? currentAnswer.name : ""}
-          </ThemedText>
-          <ThemedText>
-            {currentAnswer ? currentAnswer.description : ""}
-          </ThemedText>
-        </View>
-      ) : (
-        <TextInput
-          onChangeText={(text) => {
-            updateAnswer(currentQuestion, currentQuestion.characterField, text);
-          }}
-          value={currentValue}
-        />
-      )}
-
+      {renderQuestion()}
       <Button
         onPress={prevQuest}
         disabled={currentQuestionIndex == 0}

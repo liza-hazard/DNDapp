@@ -40,7 +40,7 @@ const quiz = [
   {
     id: "spels",
     title: "Выберите заклинания",
-    type: "select",
+    type: "multiselect",
     maxSelect: 2,
     characterField: "spels",
     options: spels,
