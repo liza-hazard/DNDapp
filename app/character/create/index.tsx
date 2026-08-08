@@ -1,20 +1,11 @@
+import { CharacterAnswers, UpdateAnswer } from "@/app/types/questionProps";
 import InputQuestion from "@/components/questions/InputQuestion";
 import MultiSelectQuestion from "@/components/questions/MultiSelectQuestion";
 import SelectQuestion from "@/components/questions/SelectQuestion";
 import { ThemedText } from "@/components/themed-text";
 import quiz from "@/constants/quiz";
-import { useState } from "react";
+import { JSX, useState } from "react";
 import { Button, View } from "react-native";
-
-interface CharacterAnswers {
-  race: string;
-  class: string;
-  subclass: string;
-  background: string;
-  alignment: string;
-  name: string;
-  spels: string[];
-}
 
 export default function QuizScreen() {
   const [answers, setAnswers] = useState<CharacterAnswers>({
@@ -26,11 +17,16 @@ export default function QuizScreen() {
     name: "",
     spels: [],
   });
+  const [error, setError] = useState("");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const currentQuestion = quiz[currentQuestionIndex];
-  const currentValue = answers[currentQuestion.characterField];
   console.log(answers);
   function nextQuest() {
+    if (!currentQuestion.validate(answers)) {
+      setError(currentQuestion.errorMessage);
+      return;
+    }
+    setError("");
     let next: number = findNextVisibleQuestion();
     if (next >= quiz.length) {
       createChar();
@@ -65,22 +61,25 @@ export default function QuizScreen() {
   function createChar() {
     console.log(answers);
   }
-  function updateAnswer(quest, field: string, value) {
+  const updateAnswer: UpdateAnswer = (quest, field, value) => {
+    let newAnswers: CharacterAnswers = { ...answers };
     if (quest.dependence) {
-      const newAnswers = { ...answers };
       newAnswers[field] = value;
-      quest.dependence.forEach((i: string) => {
+      quest.dependence.forEach((i: keyof CharacterAnswers) => {
         newAnswers[i] = "";
       });
-      setAnswers(newAnswers);
     } else {
-      setAnswers({
+      newAnswers = {
         ...answers,
         [field]: value,
-      });
+      };
     }
-  }
-  function renderQuestion() {
+    setAnswers(newAnswers);
+    if (currentQuestion.validate(newAnswers)) {
+      setError("");
+    }
+  };
+  function renderQuestion(): JSX.Element {
     switch (currentQuestion.type) {
       case "select":
         return (
@@ -115,6 +114,15 @@ export default function QuizScreen() {
       <ThemedText type="title">Quiz</ThemedText>
       <ThemedText>{currentQuestion.title}</ThemedText>
       {renderQuestion()}
+      {error && (
+        <ThemedText
+          style={{
+            color: "red",
+          }}
+        >
+          {error}
+        </ThemedText>
+      )}
       <Button
         onPress={prevQuest}
         disabled={currentQuestionIndex == 0}

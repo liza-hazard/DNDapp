@@ -1,8 +1,9 @@
+import { QuestionProps } from "@/app/types/questionProps";
 import React from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { ThemedText } from "../themed-text";
 
-const SelectQuestion = ({ quest, answers, updateAnswer }) => {
+function SelectQuestion({ quest, answers, updateAnswer }: QuestionProps) {
   const currentValue = answers[quest.characterField];
   let currentAnswer = quest.options.find((i: object) => i.id == currentValue);
   return (
@@ -30,7 +31,7 @@ const SelectQuestion = ({ quest, answers, updateAnswer }) => {
       <ThemedText>{currentAnswer ? currentAnswer.description : ""}</ThemedText>
     </View>
   );
-};
+}
 
 export default SelectQuestion;
 

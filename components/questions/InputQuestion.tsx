@@ -1,7 +1,8 @@
+import { QuestionProps } from "@/app/types/questionProps";
 import React from "react";
 import { StyleSheet, TextInput } from "react-native";
 
-const InputQuestion = ({ quest, answers, updateAnswer }) => {
+const InputQuestion = ({ quest, answers, updateAnswer }: QuestionProps) => {
   const currentValue = answers[quest.characterField];
   return (
     <TextInput

@@ -1,8 +1,13 @@
+import { QuestionProps } from "@/app/types/questionProps";
 import React, { useState } from "react";
 import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { ThemedText } from "../themed-text";
 
-const MultiSelectQuestion = ({ quest, answers, updateAnswer }) => {
+const MultiSelectQuestion = ({
+  quest,
+  answers,
+  updateAnswer,
+}: QuestionProps) => {
   const [maxSelected, setMaxSelected] = useState(quest.maxSelect);
   const currentValue = answers[quest.characterField];
   function updateArr(id) {

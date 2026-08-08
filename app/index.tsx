@@ -8,13 +8,6 @@ import { CharactersContext } from "../context/CharactersContext";
 const IndexScreen = () => {
   const { characters, setCharacters } = useContext(CharactersContext);
   const createCharacter = () => {
-    // const newCharacter = {
-    //   id: Date.now(), // простой уникальный id
-    //   name: "Безымянный персонаж",
-    //   level: 1,
-    //   class: "",
-    // };
-    // setCharacters([newCharacter, ...characters]);
     router.push("/character/create");
   };
   return (
