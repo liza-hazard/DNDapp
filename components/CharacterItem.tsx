@@ -1,3 +1,4 @@
+import classes from "@/constants/classes";
 import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
@@ -7,7 +8,8 @@ function CharacterItem({ char }) {
   return (
     <TouchableOpacity onPress={() => charLink.push(`/character?id=${char.id}`)}>
       <Text style={styles.character_item}>
-        {char.class} {char.name} - {char.level} уровень
+        {classes.find((i) => i.id == char.class).name} {char.name} -{" "}
+        {char.level} уровень
       </Text>
     </TouchableOpacity>
   );

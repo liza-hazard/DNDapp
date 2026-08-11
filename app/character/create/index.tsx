@@ -4,7 +4,9 @@ import MultiSelectQuestion from "@/components/questions/MultiSelectQuestion";
 import SelectQuestion from "@/components/questions/SelectQuestion";
 import { ThemedText } from "@/components/themed-text";
 import quiz from "@/constants/quiz";
-import { JSX, useState } from "react";
+import { CharactersContext } from "@/context/CharactersContext";
+import { router } from "expo-router";
+import { JSX, useContext, useState } from "react";
 import { Button, View } from "react-native";
 
 export default function QuizScreen() {
@@ -20,7 +22,8 @@ export default function QuizScreen() {
   const [error, setError] = useState("");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const currentQuestion = quiz[currentQuestionIndex];
-  console.log(answers);
+  const { characters, setCharacters } = useContext(CharactersContext);
+  console.log(characters);
   function nextQuest() {
     if (!currentQuestion.validate(answers)) {
       setError(currentQuestion.errorMessage);
@@ -60,6 +63,13 @@ export default function QuizScreen() {
   }
   function createChar() {
     console.log(answers);
+    const newCharacter = {
+      id: crypto.randomUUID(),
+      level: 1,
+      ...answers,
+    };
+    setCharacters([...characters, newCharacter]);
+    router.push("/");
   }
   const updateAnswer: UpdateAnswer = (quest, field, value) => {
     let newAnswers: CharacterAnswers = { ...answers };
@@ -129,7 +139,14 @@ export default function QuizScreen() {
         title="Назад"
       ></Button>
 
-      <Button onPress={nextQuest} title="Далее"></Button>
+      <Button
+        onPress={nextQuest}
+        title={
+          findNextVisibleQuestion() >= quiz.length
+            ? "Создать персонажа"
+            : "Далее"
+        }
+      ></Button>
     </View>
   );
 }
