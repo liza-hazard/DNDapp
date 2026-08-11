@@ -5,25 +5,40 @@ import SelectQuestion from "@/components/questions/SelectQuestion";
 import { ThemedText } from "@/components/themed-text";
 import quiz from "@/constants/quiz";
 import { CharactersContext } from "@/context/CharactersContext";
+import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
-import { JSX, useContext, useState } from "react";
+import { JSX, useCallback, useContext, useState } from "react";
 import { Button, View } from "react-native";
 
 export default function QuizScreen() {
-  const [answers, setAnswers] = useState<CharacterAnswers>({
-    race: "",
-    class: "",
-    subclass: "",
-    background: "",
-    alignment: "",
-    name: "",
-    spels: [],
-  });
+  const [answers, setAnswers] = useState<CharacterAnswers>(getEmptyAnswers());
   const [error, setError] = useState("");
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  useFocusEffect(
+    useCallback(() => {
+      resetQuiz();
+    }, []),
+  );
+
   const currentQuestion = quiz[currentQuestionIndex];
   const { characters, setCharacters } = useContext(CharactersContext);
-  console.log(characters);
+  console.log(answers);
+  function getEmptyAnswers(): CharacterAnswers {
+    return {
+      race: "",
+      class: "",
+      subclass: "",
+      background: "",
+      alignment: "",
+      name: "",
+      spels: [],
+    };
+  }
+  function resetQuiz() {
+    setAnswers(getEmptyAnswers());
+    setError("");
+    setCurrentQuestionIndex(0);
+  }
   function nextQuest() {
     if (!currentQuestion.validate(answers)) {
       setError(currentQuestion.errorMessage);
@@ -62,7 +77,6 @@ export default function QuizScreen() {
     setCurrentQuestionIndex(prev);
   }
   function createChar() {
-    console.log(answers);
     const newCharacter = {
       id: crypto.randomUUID(),
       level: 1,

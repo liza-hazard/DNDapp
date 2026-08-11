@@ -18,7 +18,6 @@ export default function HomeScreen() {
 
   const currentCharacter = characters.find((c: { id: string }) => c.id == id);
   function findNameOfOption(arr, id) {
-    console.log();
     return arr.find((i) => i.id == id).name;
   }
   return (
@@ -50,7 +49,10 @@ export default function HomeScreen() {
       <Text>
         Мировозрение: {findNameOfOption(alignments, currentCharacter.alignment)}
       </Text>
-      <Text>Заклинания: {currentCharacter.spels.join(",")}</Text>
+      <Text>
+        Заклинания:{" "}
+        {currentCharacter.spels ? currentCharacter.spels.join(",") : ""}
+      </Text>
     </ParallaxScrollView>
   );
 }
