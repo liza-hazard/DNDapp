@@ -19,6 +19,16 @@ const quiz: Question[] = [
     validate: (answers) => answers.race !== "",
   },
   {
+    id: "abilityScores",
+    title: "Распределите характеристики",
+    type: "scores",
+    maxSelect: 5,
+    characterField: "abilityScores",
+    visible: (answers) => true,
+    errorMessage: "Распределите все характеристики",
+    validate: (answers) => true,
+  },
+  {
     id: "class",
     title: "Выберите класс",
     type: "select",
@@ -81,6 +91,7 @@ const quiz: Question[] = [
     errorMessage: "Выберите мировоззрение",
     validate: (answers) => answers.alignment !== "",
   },
+
   {
     id: "name",
     title: "Введите имя персонажа",

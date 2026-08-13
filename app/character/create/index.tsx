@@ -1,9 +1,11 @@
 import { CharacterAnswers, UpdateAnswer } from "@/app/types/questionProps";
 import InputQuestion from "@/components/questions/InputQuestion";
 import MultiSelectQuestion from "@/components/questions/MultiSelectQuestion";
+import ScoresQuestion from "@/components/questions/ScoresQuestion";
 import SelectQuestion from "@/components/questions/SelectQuestion";
 import { ThemedText } from "@/components/themed-text";
 import quiz from "@/constants/quiz";
+import races from "@/constants/races";
 import { CharactersContext } from "@/context/CharactersContext";
 import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
@@ -22,6 +24,7 @@ export default function QuizScreen() {
 
   const currentQuestion = quiz[currentQuestionIndex];
   const { characters, setCharacters } = useContext(CharactersContext);
+
   console.log(answers);
   function getEmptyAnswers(): CharacterAnswers {
     return {
@@ -32,6 +35,14 @@ export default function QuizScreen() {
       alignment: "",
       name: "",
       spels: [],
+      abilityScores: {
+        STR: 8,
+        DEX: 8,
+        CON: 8,
+        INT: 8,
+        WIS: 8,
+        CHA: 8,
+      },
     };
   }
   function resetQuiz() {
@@ -81,9 +92,16 @@ export default function QuizScreen() {
       id: crypto.randomUUID(),
       level: 1,
       ...answers,
+      abilityScores: calculateFinalAbilities(answers.abilityScores),
     };
     setCharacters([...characters, newCharacter]);
     router.push("/");
+  }
+  function calculateFinalAbilities(abilities) {
+    const raceBonuses: Partial<Abilities> = races.find(
+      (i: Option) => i.id == answers.race,
+    ).addScores;
+    return abilities;
   }
   const updateAnswer: UpdateAnswer = (quest, field, value) => {
     let newAnswers: CharacterAnswers = { ...answers };
@@ -129,8 +147,16 @@ export default function QuizScreen() {
             updateAnswer={updateAnswer}
           />
         );
+      case "scores":
+        return (
+          <ScoresQuestion
+            quest={currentQuestion}
+            answers={answers}
+            updateAnswer={updateAnswer}
+          />
+        );
       default:
-        return <ThemedText>Неизвестный типо вопроса</ThemedText>;
+        return <ThemedText>Неизвестный тип вопроса</ThemedText>;
     }
   }
   return (

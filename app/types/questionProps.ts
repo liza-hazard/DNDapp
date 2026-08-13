@@ -6,18 +6,29 @@ export interface CharacterAnswers {
   alignment: string;
   name: string;
   spels: string[] | string;
+  abilityScores: Abilities;
 }
 
-interface Option {
+export interface Abilities {
+  STR: number;
+  DEX: number;
+  CON: number;
+  INT: number;
+  WIS: number;
+  CHA: number;
+}
+
+export interface Option {
   id: string;
   name: string;
   description?: string;
+  addScores?: Partial<Abilities>;
 }
 
 export interface Question {
   id: string;
   title: string;
-  type: "select" | "input" | "multiselect";
+  type: "select" | "input" | "multiselect" | "scores";
   characterField: string;
   options?: Option[];
   resultText?: string;
